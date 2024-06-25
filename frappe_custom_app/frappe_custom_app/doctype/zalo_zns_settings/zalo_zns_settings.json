@@ -1,0 +1,86 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-06-22 15:06:08.034783",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "app_id",
+  "app_secret",
+  "redirect_uri",
+  "code_verifier",
+  "code_challenge",
+  "state",
+  "access_token",
+  "refresh_token"
+ ],
+ "fields": [
+  {
+   "fieldname": "app_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Zalo App ID"
+  },
+  {
+   "fieldname": "app_secret",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Zalo App Secret"
+  },
+  {
+   "fieldname": "redirect_uri",
+   "fieldtype": "Data",
+   "label": "Redirect URI"
+  },
+  {
+   "fieldname": "code_verifier",
+   "fieldtype": "Data",
+   "label": "Code Verifier"
+  },
+  {
+   "fieldname": "code_challenge",
+   "fieldtype": "Data",
+   "label": "Code Challenge"
+  },
+  {
+   "fieldname": "access_token",
+   "fieldtype": "Data",
+   "label": "Access Token"
+  },
+  {
+   "fieldname": "refresh_token",
+   "fieldtype": "Data",
+   "label": "Refresh Token"
+  },
+  {
+   "fieldname": "state",
+   "fieldtype": "Read Only",
+   "label": "State"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2024-06-25 07:08:15.921538",
+ "modified_by": "Administrator",
+ "module": "Frappe Custom App",
+ "name": "Zalo ZNS Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

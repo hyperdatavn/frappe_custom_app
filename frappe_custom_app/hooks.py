@@ -3,8 +3,8 @@ from . import __version__ as app_version
 app_name = "frappe_custom_app"
 app_title = "Frappe Custom App"
 app_publisher = "duongtk"
-app_description = "custom app"
-app_email = "khanhduongtram@gmail.com"
+app_description = "frappe custom app"
+app_email = "hyperdatavn@gmail.com"
 app_license = "hyperdatavn"
 
 # Includes in <head>
@@ -215,3 +215,8 @@ app_license = "hyperdatavn"
 # auth_hooks = [
 #	"frappe_custom_app.auth.validate"
 # ]
+
+# frappe_custom_app/hooks.py
+override_whitelisted_methods = {
+    "frappe_custom_app.frappe_custom_app.doctype.zalo_zns_settings.zalo_zns_settings.handle_zalo_callback": "frappe_custom_app.frappe_custom_app.doctype.zalo_zns_settings.zalo_zns_settings.handle_zalo_callback"
+}
