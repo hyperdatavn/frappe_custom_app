@@ -13,21 +13,5 @@ frappe.ui.form.on('Zalo ZNS Settings', {
             });
         });
 
-        // frm.add_custom_button(__('Exchange Code for Token'), function() {
-        //     let authorization_code = prompt("Please enter the Authorization Code:");
-        //     if (authorization_code) {
-        //         frappe.call({
-        //             method: 'frappe_custom_app.frappe_custom_app.doctype.zalo_zns_settings.zalo_zns_settings.get_access_token',
-        //             args: {
-        //                 authorization_code: authorization_code
-        //             },
-        //             callback: function(response) {
-        //                 frappe.msgprint(__('Access Token and Refresh Token have been saved successfully.'));
-        //                 frm.reload_doc();
-        //             }
-        //         });
-        //     }
-        // });
-
     }
 });
