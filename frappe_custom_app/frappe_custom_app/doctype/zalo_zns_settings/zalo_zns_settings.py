@@ -26,8 +26,11 @@ def generate_code_challenge():
     settings.state = state
     
     # Generate the redirect URL
-    base_url = frappe.utils.get_url()
-    redirect_uri = f"{base_url}/api/method/frappe_custom_app.frappe_custom_app.doctype.zalo_zns_settings.zalo_zns_settings.handle_zalo_callback"
+    # base_url = frappe.utils.get_url()
+    request = frappe.local.request
+    hostname = request.host
+
+    redirect_uri = f"https://{hostname}/api/method/frappe_custom_app.frappe_custom_app.doctype.zalo_zns_settings.zalo_zns_settings.handle_zalo_callback"
     settings.redirect_uri = redirect_uri
     
     settings.save()

@@ -8,6 +8,14 @@
  "engine": "InnoDB",
  "field_order": [
   "send_to",
+  "customer",
+  "supplier",
+  "sales_partner",
+  "department",
+  "branch",
+  "create_receiver_list",
+  "receiver_list",
+  "column_break_uhzx",
   "template_id",
   "template_name",
   "template_data",
@@ -15,10 +23,10 @@
  ],
  "fields": [
   {
-   "description": "I.e: 84014123123",
    "fieldname": "send_to",
-   "fieldtype": "Data",
-   "label": "Send To"
+   "fieldtype": "Select",
+   "label": "Send To",
+   "options": "All Contact\nAll Customer Contact\nAll Supplier Contact\nAll Sales Partner Contact\nAll Lead (Open)\nAll Employee (Active)\nAll Sales Person"
   },
   {
    "fieldname": "send_zns",
@@ -43,14 +51,70 @@
   {
    "fieldname": "template_name",
    "fieldtype": "Data",
-   "label": "Template Name",
    "hidden": 1,
-   "in_list_view": 1
+   "in_list_view": 1,
+   "label": "Template Name"
+  },
+  {
+   "depends_on": "eval:doc.send_to=='All Customer Contact'",
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Customer",
+   "options": "Customer"
+  },
+  {
+   "depends_on": "eval:doc.send_to=='All Supplier Contact'",
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Supplier",
+   "options": "Supplier"
+  },
+  {
+   "depends_on": "eval:doc.send_to=='All Sales Partner Contact'\n",
+   "fieldname": "sales_partner",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Sales Partner",
+   "options": "Sales Partner"
+  },
+  {
+   "depends_on": "eval:doc.send_to=='All Employee (Active)'",
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Department",
+   "options": "Department"
+  },
+  {
+   "depends_on": "eval:doc.send_to=='All Employee (Active)'\n",
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Branch",
+   "options": "Branch"
+  },
+  {
+   "fieldname": "create_receiver_list",
+   "fieldtype": "Button",
+   "label": "Create Receiver List",
+   "options": "create_receiver_list"
+  },
+  {
+   "description": "I.e: - 0912345678",
+   "fieldname": "receiver_list",
+   "fieldtype": "Code",
+   "label": "Receiver List"
+  },
+  {
+   "fieldname": "column_break_uhzx",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-24 04:09:56.114433",
+ "modified": "2024-07-11 14:32:00.784223",
  "modified_by": "Administrator",
  "module": "Frappe Custom App",
  "name": "Zalo ZNS Center",

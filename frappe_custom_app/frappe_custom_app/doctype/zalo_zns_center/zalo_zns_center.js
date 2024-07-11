@@ -45,10 +45,17 @@ frappe.ui.form.on('Zalo ZNS Center', {
         }
     },
     send_zns: function(frm) {
-        // Validate the phone number
-        let phone_number = frm.doc.send_to;
-        if (!phone_number.startsWith('84')) {
-            frappe.msgprint(__('Phone number must start with 84'));
+        // Validates
+        const template_id = frm.doc.template_id;
+        if (!frm.doc.receiver_list) {
+            frappe.msgprint(__('Please input a phone numbers!'));
+        }  
+        if (!frm.doc.template_id) {
+            frappe.msgprint(__('Please choise a template!'));
+            return;
+        }
+        if (!frm.doc.template_data) {
+            frappe.msgprint(__('Please input template data!'));
             return;
         }
 
@@ -56,7 +63,7 @@ frappe.ui.form.on('Zalo ZNS Center', {
         frappe.call({
             method: 'frappe_custom_app.frappe_custom_app.doctype.zalo_zns_center.zalo_zns_center.send_zalo_notification',
             args: {
-                phone_number: frm.doc.send_to,
+                receiver_list: frm.doc.receiver_list,
                 template_id: frm.doc.template_id,
                 template_data: frm.doc.template_data,
                 tracking_id: 'Your tracking ID here'  // You can modify this as per your requirements
