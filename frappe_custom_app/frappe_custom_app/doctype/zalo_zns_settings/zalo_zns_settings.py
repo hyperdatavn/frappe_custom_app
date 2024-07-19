@@ -45,7 +45,7 @@ def get_access_token(authorization_code):
     token_url = "https://oauth.zaloapp.com/v4/access_token"
     payload = {
         "app_id": settings.app_id,
-        "app_secret": settings.secret_key,
+        "app_secret": settings.app_secret,
         "code": authorization_code,
         "grant_type": "authorization_code",
         "code_verifier": settings.code_verifier,
