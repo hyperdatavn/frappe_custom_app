@@ -43,15 +43,18 @@ def generate_code_challenge():
 def get_access_token(authorization_code):
     settings = frappe.get_doc("Zalo ZNS Settings")
     token_url = "https://oauth.zaloapp.com/v4/access_token"
+    headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "secret_key": settings.app_secret
+    }
     payload = {
         "app_id": settings.app_id,
-        "app_secret": settings.app_secret,
         "code": authorization_code,
         "grant_type": "authorization_code",
         "code_verifier": settings.code_verifier,
     }
     
-    response = requests.post(token_url, data=payload)
+    response = requests.post(token_url, headers=headers, data=payload)
     token_data = response.json()
     
     settings.access_token = token_data.get('access_token')
@@ -59,6 +62,8 @@ def get_access_token(authorization_code):
     settings.save()
     frappe.db.commit()
     return token_data
+
+import frappe
 
 @frappe.whitelist(allow_guest=True)
 def handle_zalo_callback():
@@ -75,16 +80,7 @@ def handle_zalo_callback():
 
     get_access_token(authorization_code)
 
-    frappe.msgprint("OAuth flow completed successfully.")
-    # Return an HTML page with a success message and a close button
-    return """
-    <html>
-    <head>
-        <title>OAuth Flow Completed</title>
-    </head>
-    <body>
-        <h1>OAuth flow completed successfully.</h1>
-        <button onclick="window.close()">Close</button>
-    </body>
-    </html>
-    """
+    # Redirect to the desired URL after successful completion
+    frappe.local.response["type"] = "redirect"
+    frappe.local.response["location"] = "/app/zalo-zns-settings"
+    return
