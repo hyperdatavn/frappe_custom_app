@@ -37,7 +37,8 @@ def generate_code_challenge():
     frappe.db.commit()
 
     authorization_url = f"https://oauth.zaloapp.com/v4/permission?app_id={settings.app_id}&redirect_uri={redirect_uri}&code_challenge={code_challenge}&state={state}"
-    return authorization_url
+    # return authorization_url
+    return True
 
 @frappe.whitelist()
 def get_access_token(authorization_code):
@@ -68,12 +69,12 @@ def handle_zalo_callback():
 
     settings = frappe.get_doc("Zalo ZNS Settings")
     if state != settings.state:
-        frappe.throw(_("State does not match"))
+        frappe.throw("State does not match")
         
     if code_challenge != settings.code_challenge:
-        frappe.throw(_("Code challenge does not match"))    
+        frappe.throw("Code challenge does not match")    
 
     get_access_token(authorization_code)
 
-    frappe.msgprint(_("OAuth flow completed successfully."))
+    frappe.msgprint("OAuth flow completed successfully.")
     return True
