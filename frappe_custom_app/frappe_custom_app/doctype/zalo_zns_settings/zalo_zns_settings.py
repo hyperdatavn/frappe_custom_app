@@ -37,8 +37,7 @@ def generate_code_challenge():
     frappe.db.commit()
 
     authorization_url = f"https://oauth.zaloapp.com/v4/permission?app_id={settings.app_id}&redirect_uri={redirect_uri}&code_challenge={code_challenge}&state={state}"
-    # return authorization_url
-    return True
+    return authorization_url
 
 @frappe.whitelist()
 def get_access_token(authorization_code):
@@ -77,4 +76,15 @@ def handle_zalo_callback():
     get_access_token(authorization_code)
 
     frappe.msgprint("OAuth flow completed successfully.")
-    return True
+    # Return an HTML page with a success message and a close button
+    return """
+    <html>
+    <head>
+        <title>OAuth Flow Completed</title>
+    </head>
+    <body>
+        <h1>OAuth flow completed successfully.</h1>
+        <button onclick="window.close()">Close</button>
+    </body>
+    </html>
+    """
