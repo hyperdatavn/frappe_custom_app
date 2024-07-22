@@ -35,14 +35,12 @@ def generate_code_challenge():
     
     settings.save()
     frappe.db.commit()
-
-    authorization_url = f"https://oauth.zaloapp.com/v4/permission?app_id={settings.app_id}&redirect_uri={redirect_uri}&code_challenge={code_challenge}&state={state}"
-    return authorization_url
+    return
 
 @frappe.whitelist()
 def get_access_token(authorization_code):
     settings = frappe.get_doc("Zalo ZNS Settings")
-    token_url = "https://oauth.zaloapp.com/v4/access_token"
+    token_url = "https://oauth.zaloapp.com/v4/oa/access_token"
     headers = {
         "Content-Type": "application/x-www-form-urlencoded",
         "secret_key": settings.app_secret

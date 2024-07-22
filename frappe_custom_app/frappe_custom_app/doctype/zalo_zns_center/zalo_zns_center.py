@@ -113,26 +113,33 @@ def get_new_access_token():
     # Fetch Zalo ZNS settings
     settings = frappe.get_single("Zalo ZNS Settings")
     app_id = settings.app_id
-    app_secret = settings.app_secret
+    secret = settings.app_secret
     refresh_token = settings.refresh_token
 
-    if not (app_id and app_secret and refresh_token):
+    if not (app_id and secret and refresh_token):
         frappe.throw("Zalo ZNS settings are not properly configured.")
 
-    url = 'https://oauth.zaloapp.com/v4/access_token'
+    url = 'https://oauth.zaloapp.com/v4/oa/access_token'
+    headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "secret_key": secret
+    }
     payload = {
         'app_id': app_id,
-        'app_secret': app_secret,
         'refresh_token': refresh_token,
         'grant_type': 'refresh_token'
     }
 
     try:
-        response = requests.post(url, data=payload)
+        response = requests.post(url, headers=headers,data=payload)
         response.raise_for_status()
         data = response.json()
 
         if 'access_token' in data:
+            settings.access_token = data['access_token']
+            settings.refresh_token = data['refresh_token']
+            settings.save()
+            frappe.db.commit()
             # Optionally, update settings with the new access token if needed
             return data['access_token']
         else:
