@@ -110,9 +110,10 @@ app_license = "hyperdatavn"
 # ---------------
 # Override standard doctype classes
 
-# override_doctype_class = {
-#	"ToDo": "custom_app.overrides.CustomToDo"
-# }
+override_doctype_class = {
+	"User": "frappe_custom_app.overrides.user.CustomUser",
+    "Web Template": "frappe_custom_app.overrides.web_template.CustomWebTemplate",
+}
 
 # Document Events
 # ---------------
@@ -220,3 +221,5 @@ app_license = "hyperdatavn"
 override_whitelisted_methods = {
     "frappe_custom_app.frappe_custom_app.doctype.zalo_zns_settings.zalo_zns_settings.handle_zalo_callback": "frappe_custom_app.frappe_custom_app.doctype.zalo_zns_settings.zalo_zns_settings.handle_zalo_callback"
 }
+
+signup_form_template = "frappe_custom_app.plugins.show_custom_signup"
