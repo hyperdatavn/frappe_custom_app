@@ -6,8 +6,8 @@ def login_via_wiki_user(email: str):
     """
     Custom API to login as a wiki user and redirect to the wiki page.
     """
-    # Check if "allow_default_wiki_user" is enabled in "Custom App Settings"
-    allow_default_wiki_user = frappe.db.get_single_value("Custom App Settings", "allow_default_wiki_user")
+    # Check if "allow_default_wiki_user" is enabled in "Hyperdata App Settings"
+    allow_default_wiki_user = frappe.db.get_single_value("Hyperdata App Settings", "allow_default_wiki_user")
     if not allow_default_wiki_user:
         # Exit if allow_default_wiki_user is False
         frappe.respond_as_web_page(

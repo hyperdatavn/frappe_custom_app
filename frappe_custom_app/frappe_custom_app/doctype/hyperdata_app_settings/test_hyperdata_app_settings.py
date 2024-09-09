@@ -5,5 +5,5 @@
 from frappe.tests.utils import FrappeTestCase
 
 
-class TestCustomAppSettings(FrappeTestCase):
+class TestHyperdataAppSettings(FrappeTestCase):
 	pass
