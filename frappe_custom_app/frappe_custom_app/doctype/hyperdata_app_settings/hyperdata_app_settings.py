@@ -4,7 +4,7 @@
 from frappe.model.document import Document
 import frappe
 
-class CustomAppSettings(Document):
+class HyperdataAppSettings(Document):
     def validate(self):
         if "System Manager" not in frappe.get_roles():
             frappe.throw(_("You do not have access to this app"), frappe.PermissionError)

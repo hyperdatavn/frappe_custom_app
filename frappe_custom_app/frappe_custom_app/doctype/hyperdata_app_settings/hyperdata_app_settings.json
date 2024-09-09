@@ -40,7 +40,7 @@
  "modified": "2024-09-09 22:12:35.459772",
  "modified_by": "Administrator",
  "module": "Frappe Custom App",
- "name": "Custom App Settings",
+ "name": "Hyperdata App Settings",
  "owner": "Administrator",
  "permissions": [
   {

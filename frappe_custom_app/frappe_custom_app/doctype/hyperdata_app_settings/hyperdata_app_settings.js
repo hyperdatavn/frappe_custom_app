@@ -1,6 +1,6 @@
 // Copyright (c) 2024, duongtk and contributors
 // For license information, please see license.txt
-frappe.ui.form.on('Custom App Settings', {
+frappe.ui.form.on('Hyperdata App Settings', {
     refresh: function (frm) {
         frm.add_custom_button(__('View Document'), function () {
             // Open the API URL in a new tab

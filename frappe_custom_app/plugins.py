@@ -5,7 +5,7 @@ from frappe import _
 
 def show_custom_signup():
     # Check if custom signup form is enabled
-    if frappe.db.get_single_value("Custom App Settings", "use_custom_signup_form"):
+    if frappe.db.get_single_value("Hyperdata App Settings", "use_custom_signup_form"):
         return "frappe_custom_app/templates/signup-form.html"
     
     # Check if LMS Settings DocType exists
