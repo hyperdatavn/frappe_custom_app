@@ -1,0 +1,60 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-09-08 03:44:51.143190",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "frappe_section",
+  "allow_default_wiki_user",
+  "lms_section",
+  "use_custom_signup_form"
+ ],
+ "fields": [
+  {
+   "fieldname": "lms_section",
+   "fieldtype": "Section Break",
+   "label": "LMS"
+  },
+  {
+   "default": "0",
+   "fieldname": "use_custom_signup_form",
+   "fieldtype": "Check",
+   "label": "Use Custom Sign Up Form"
+  },
+  {
+   "fieldname": "frappe_section",
+   "fieldtype": "Section Break",
+   "label": "Frappe"
+  },
+  {
+   "default": "0",
+   "fieldname": "allow_default_wiki_user",
+   "fieldtype": "Check",
+   "label": "Allow Default Wiki User"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2024-09-09 22:12:35.459772",
+ "modified_by": "Administrator",
+ "module": "Frappe Custom App",
+ "name": "Custom App Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

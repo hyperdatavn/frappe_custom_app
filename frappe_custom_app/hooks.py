@@ -223,3 +223,10 @@ override_whitelisted_methods = {
 }
 
 signup_form_template = "frappe_custom_app.plugins.show_custom_signup"
+
+# Wiki login api
+# hooks.py
+# Registering the custom login API
+api_methods = {
+    "GET /api/method/frappe_custom_app.frappe_custom_app.api.login_via_wiki_user": "frappe_custom_app.frappe_custom_app.api.login_via_wiki_user"
+}
