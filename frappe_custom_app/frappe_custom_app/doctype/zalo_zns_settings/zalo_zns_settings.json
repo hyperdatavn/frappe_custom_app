@@ -32,11 +32,13 @@
   {
    "fieldname": "redirect_uri",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Redirect URI"
   },
   {
    "fieldname": "code_verifier",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Code Verifier"
   },
   {
@@ -47,11 +49,13 @@
   {
    "fieldname": "access_token",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Access Token"
   },
   {
    "fieldname": "refresh_token",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Refresh Token"
   },
   {
@@ -63,7 +67,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-06-25 07:08:15.921538",
+ "modified": "2024-09-03 03:54:27.359174",
  "modified_by": "Administrator",
  "module": "Frappe Custom App",
  "name": "Zalo ZNS Settings",
