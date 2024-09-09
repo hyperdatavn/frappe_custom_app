@@ -17,23 +17,27 @@ def login_via_wiki_user(email: str):
             indicator_color="red",
         )
         return
-    
-    # Check if the email is authorized to log in
-    if email == "wiki@gmail.com":
-        # Log the user in as the wiki user
-        frappe.local.login_manager.login_as(email)
 
-        # Redirect to the wiki home page
+    # Check if the user is already logged in
+    if frappe.session.user != "Guest":
+        # Redirect to the wiki home page with the current user profile
         redirect_to_wiki()
     else:
-        # If email is not allowed, return a 403 forbidden response
-        frappe.respond_as_web_page(
-            _("Not Permitted"),
-            _("The link you're trying to use is invalid or expired."),
-            http_status_code=403,
-            indicator_color="red",
-        )
-
+        # If email is authorized and the user is not logged in, log in as the wiki user
+        if email == "wiki@gmail.com":
+            # Log the user in as the wiki user
+            frappe.local.login_manager.login_as(email)
+            
+            # Redirect to the wiki home page
+            redirect_to_wiki()
+        else:
+            # If email is not allowed, return a 403 forbidden response
+            frappe.respond_as_web_page(
+                _("Not Permitted"),
+                _("The link you're trying to use is invalid or expired."),
+                http_status_code=403,
+                indicator_color="red",
+            )
 
 def redirect_to_wiki():
     """
