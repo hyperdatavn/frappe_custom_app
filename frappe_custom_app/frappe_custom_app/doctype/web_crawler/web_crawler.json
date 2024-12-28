@@ -1,0 +1,72 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-12-01 07:10:29.156329",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "website_url",
+  "max_depth",
+  "time_limit",
+  "status",
+  "output_file"
+ ],
+ "fields": [
+  {
+   "fieldname": "website_url",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "URL",
+   "reqd": 1
+  },
+  {
+   "default": "60",
+   "fieldname": "time_limit",
+   "fieldtype": "Int",
+   "label": "Timeout"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nProcessing\nCompleted\nFailed",
+   "read_only": 1
+  },
+  {
+   "fieldname": "output_file",
+   "fieldtype": "Attach",
+   "label": "Raw Output File",
+   "read_only": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "max_depth",
+   "fieldtype": "Int",
+   "label": "Max Depth"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-12-01 08:46:02.606496",
+ "modified_by": "Administrator",
+ "module": "Frappe Custom App",
+ "name": "Web Crawler",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

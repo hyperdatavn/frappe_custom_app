@@ -1,1 +1,11 @@
-# frappe -- https://github.com/frappe/frappe is installed via 'bench init'
+# beautifulsoup4>=4.12.0
+# selenium>=4.16.0
+# python-docx>=0.8.11
+# webdriver_manager>=4.0.0
+# playwright>=1.41.0
+langchain
+langchain-community # process a text
+tiktoken  # to embedded content to vector
+faiss-cpu # retrive query
+
+# bench setup requirements

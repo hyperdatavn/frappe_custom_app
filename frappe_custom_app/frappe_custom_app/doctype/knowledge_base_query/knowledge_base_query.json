@@ -1,0 +1,66 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-12-28 02:57:56.002229",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "user_query",
+  "submit_asking",
+  "response",
+  "relevant_texts",
+  "status"
+ ],
+ "fields": [
+  {
+   "fieldname": "response",
+   "fieldtype": "Text Editor",
+   "label": "Response"
+  },
+  {
+   "fieldname": "relevant_texts",
+   "fieldtype": "Text Editor",
+   "label": "Relevant Texts"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nProcessing\nCompleted\nFailed"
+  },
+  {
+   "fieldname": "user_query",
+   "fieldtype": "Data",
+   "label": "User Query"
+  },
+  {
+   "fieldname": "submit_asking",
+   "fieldtype": "Button",
+   "label": "Asking"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-12-28 03:23:12.864959",
+ "modified_by": "Administrator",
+ "module": "Frappe Custom App",
+ "name": "Knowledge Base Query",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
