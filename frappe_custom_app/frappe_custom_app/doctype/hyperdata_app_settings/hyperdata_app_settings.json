@@ -7,6 +7,9 @@
  "field_order": [
   "frappe_section",
   "allow_default_wiki_user",
+  "openia_section",
+  "api_key",
+  "model",
   "lms_section",
   "use_custom_signup_form"
  ],
@@ -32,12 +35,27 @@
    "fieldname": "allow_default_wiki_user",
    "fieldtype": "Check",
    "label": "Allow Default Wiki User"
+  },
+  {
+   "fieldname": "openia_section",
+   "fieldtype": "Section Break",
+   "label": "OpenIA"
+  },
+  {
+   "fieldname": "api_key",
+   "fieldtype": "Data",
+   "label": "Apikey"
+  },
+  {
+   "fieldname": "model",
+   "fieldtype": "Data",
+   "label": "Model"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-09-09 22:12:35.459772",
+ "modified": "2024-12-26 13:04:27.622409",
  "modified_by": "Administrator",
  "module": "Frappe Custom App",
  "name": "Hyperdata App Settings",
