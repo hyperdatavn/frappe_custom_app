@@ -230,3 +230,13 @@ signup_form_template = "frappe_custom_app.plugins.show_custom_signup"
 api_methods = {
     "GET /api/method/frappe_custom_app.frappe_custom_app.api.login_via_wiki_user": "frappe_custom_app.frappe_custom_app.api.login_via_wiki_user"
 }
+
+# DocType JS
+doctype_js = {
+    "Knowledge Base Chunk": "public/js/knowledge_base_chunk.js"
+}
+
+# DocType List JS
+doctype_list_js = {
+    "Knowledge Base Chunk": "public/js/knowledge_base_chunk_list.js"
+}

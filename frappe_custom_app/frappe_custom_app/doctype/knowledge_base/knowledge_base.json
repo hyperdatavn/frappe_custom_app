@@ -22,7 +22,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Status",
-   "options": "Pending\nIn Progress\nCompleted"
+   "options": "Pending\nChunked\nIn Progress\nCompleted"
   },
   {
    "fieldname": "document_file",
