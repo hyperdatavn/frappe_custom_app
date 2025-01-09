@@ -6,6 +6,9 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.llms import OpenAI
 from langchain.prompts import PromptTemplate
 from frappe.model.document import Document
+import os
+
+MAX_DISTANCE = 2.0  # Define maximum distance for FAISS similarity normalization
 
 class KnowledgeBaseQuery(Document):
     pass
@@ -45,33 +48,51 @@ def process_query(docname):
         # Get user query and embed it
         user_query = knowledge_query.user_query
         user_vector = embeddings.embed_query(user_query)
+        print("Query Vector Length:", len(user_vector))
+        print("First 5 Elements of Vector:", user_vector[:5])
 
         # Load FAISS index and metadata
+        if not os.path.exists(faiss_index_path) or not os.path.exists(metadata_path):
+            frappe.throw("No knowledge base vectors found. Please index some documents first.")
+
         index = faiss.read_index(faiss_index_path)
+        if index.ntotal == 0:
+            frappe.throw("Knowledge base index is empty. Please index some documents first.")
         with open(metadata_path, "r", encoding="utf-8") as f:
             metadata = json.load(f)
 
         # Query FAISS for relevant texts
         top_k = 3
         distances, indices = index.search(np.array([user_vector], dtype="float32"), top_k)
-
+        print("Distances:", distances)
+        print("Indices:", indices)
         # Ensure valid indices and extract texts
         relevant_texts = []
-        for idx in indices[0]:
-            if idx != -1 and idx < len(metadata):  # Ensure the index is valid
-                relevant_texts.append(metadata[idx].get("text", "No relevant text found"))
+        for idx, distance in zip(indices[0], distances[0]):
+            if idx >= 0:
+                metadata_entry = metadata[idx]
+                relevant_text = {
+                    'text': metadata_entry.get('description', ''),
+                    'section': metadata_entry.get('section_title', ''),
+                    'source': metadata_entry.get('file_name', ''),
+                    'relevance': 1.0 - (distance / MAX_DISTANCE)
+                }
+                relevant_texts.append(relevant_text)
+
+        # Sort by relevance
+        relevant_texts.sort(key=lambda x: x['relevance'], reverse=True)
 
         # If no relevant texts are found, set a default message
         if not relevant_texts:
             relevant_texts.append("No relevant texts found for the query.")
 
         # Join the relevant texts into a single string to use in GPT prompt
-        context = "\n".join(relevant_texts)
-
+        context = "\n".join([text['text'] for text in relevant_texts])
+        print("context: ", context)
         # Generate GPT prompt
         gpt_prompt = PromptTemplate(
             input_variables=["context", "query"],
-            template="You are an assistant with legal knowledge. Based on the following context:\n{context}\n\nAnswer the user's question:\n{query}"
+            template="You are an assistant with legal knowledge. Based on the following context:\n{context}\n\nAnswer the user's question by vietnamese:\n{query}"
         ).format(context=context, query=user_query)
 
         # Ask GPT

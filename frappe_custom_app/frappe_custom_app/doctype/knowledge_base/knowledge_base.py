@@ -6,10 +6,21 @@ from langchain.embeddings import OpenAIEmbeddings
 import faiss
 from docx import Document as DocxDocument
 from frappe.model.document import Document
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 
+CHUNK_SIZE = 500
+FAISS_INDEX_PATH = "private/files/faiss_index.bin"
+FAISS_METADATA_PATH = "private/files/faiss_metadata.json"
 
 class KnowledgeBase(Document):
     """Knowledge Base Document Class"""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.api_key = frappe.db.get_single_value("Hyperdata App Settings", "api_key")
+
+    def after_insert(self):
+        if self.document_file and self.status != "Chunked":
+            self.create_content_chunks()
 
     @frappe.whitelist()
     def store_content_as_vector(self):
@@ -27,27 +38,28 @@ class KnowledgeBase(Document):
         else:
             print("File not found!")
                
-        # Extract text from the document
-        text = self._extract_text_from_document(file_path)
-        if not text:
-            frappe.throw("Failed to extract text from the document.")
-
         # Generate vector embeddings
-        api_key = frappe.db.get_single_value("Hyperdata App Settings", "api_key")
-        if not api_key:
+        if not self.api_key:
             frappe.throw("OpenAI API key is missing. Please configure it in Hyperdata App Settings.")
+        # Split document into chunks
+        chunks = self._chunk_document(file_path)
         
-        document_vector = self._generate_vector_from_text(text, api_key)
-
-        # Store vector in FAISS
-        metadata = {
-            "file_name":  os.path.basename(file_path),
-            "source": self.source,
-            "description": text[:100],  # Preview first 100 characters
-            "content_length": len(text),
-            "update_date": frappe.utils.now()
-        }
-        self._store_vector_in_faiss(document_vector, metadata)
+        # Generate vectors for each chunk
+        for chunk_idx, chunk in enumerate(chunks):
+            document_vector = self._generate_vector_from_text(chunk['text'], self.api_key)
+            
+            # Enhanced metadata per chunk
+            metadata = {
+                "file_name": os.path.basename(file_path),
+                "source": self.source,
+                "chunk_index": chunk_idx,
+                "section_title": chunk.get('section_title', ''),
+                "description": chunk['text'][:100],
+                "content_length": len(chunk['text']),
+                "update_date": frappe.utils.now()
+            }
+            
+            self._store_vector_in_faiss(document_vector, metadata)
 
         # Update document status
         self.processed_data = f"Vector stored with metadata: {metadata}"
@@ -98,6 +110,8 @@ class KnowledgeBase(Document):
             # Load or initialize FAISS index
             if os.path.exists(faiss_index_path):
                 index = faiss.read_index(faiss_index_path)
+                print("Number of vectors in FAISS Index:", index.ntotal)
+
             else:
                 index = faiss.IndexFlatL2(len(document_vector))
 
@@ -109,8 +123,12 @@ class KnowledgeBase(Document):
                 metadata_list = []
 
             # Add vector and metadata
-            index.add(np.array([document_vector], dtype="float32"))
-            metadata_list.append(metadata)
+            if index.is_trained:
+                index.add(np.array([document_vector], dtype="float32"))
+                metadata_list.append(metadata)
+            else:
+                frappe.throw("FAISS Index is not trained. Failed to add vector.")
+
 
             # Save updated index and metadata
             faiss.write_index(index, faiss_index_path)
@@ -119,6 +137,117 @@ class KnowledgeBase(Document):
 
         except Exception as e:
             frappe.throw(f"Failed to store vector in FAISS: {str(e)}")
+
+    def _chunk_document(self, file_path, chunk_size=500, chunk_overlap=50):
+        """Split document into chunks using LangChain's TextSplitter"""
+
+        # Read the entire document text
+        try:
+            document = DocxDocument(file_path)
+            full_text = []
+            current_section = None
+
+            for paragraph in document.paragraphs:
+                # Section headings
+                if paragraph.style.name.startswith("Heading"):
+                    current_section = paragraph.text
+                    continue
+                text = paragraph.text.strip()
+                if text:
+                    full_text.append(text)
+
+            text = "\n".join(full_text)
+        except Exception as e:
+            frappe.throw(f"Error reading the document file: {str(e)}")
+
+        # Use LangChain's TextSplitter
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=chunk_size,
+            chunk_overlap=chunk_overlap,
+            separators=["\n\n", "\n", " ", ""]
+        )
+
+        # Split text into chunks
+        chunks = text_splitter.create_documents([text])
+
+        # Prepare chunks with metadata
+        chunk_list = []
+        for idx, chunk in enumerate(chunks):
+            chunk_list.append({
+                'text': chunk.page_content,
+                'section_title': current_section
+            })
+
+        return chunk_list
+
+    @frappe.whitelist()
+    def create_content_chunks(self):
+        """
+        Process the uploaded .docx file and create chunk documents for review
+        """
+        file_url = self.document_file
+        if not file_url:
+            frappe.throw("Please upload a document file before preparing data.")
+
+        file_path = frappe.get_site_path("private", file_url.replace("/private/files/", "files/"))
+        
+        # Split document into chunks
+        chunks = self._chunk_document(file_path)
+        
+        # Create chunk documents
+        for chunk_idx, chunk in enumerate(chunks):
+            chunk_doc = frappe.get_doc({
+                "doctype": "Knowledge Base Chunk",
+                "knowledge_base": self.name,
+                "chunk_index": chunk_idx,
+                "section_title": chunk.get('section_title', ''),
+                "content": chunk['text'],
+                "status": "Draft"
+            })
+            chunk_doc.insert()
+
+        self.status = "Chunked"
+        self.save()
+
+    @frappe.whitelist()
+    def process_reviewed_chunks(self):
+        """
+        Process all reviewed chunks and store them as vectors
+        """
+        if not self.api_key:
+            frappe.throw("OpenAI API key is missing. Please configure it in Hyperdata App Settings.")
+
+        # Get all reviewed chunks
+        chunks = frappe.get_all(
+            "Knowledge Base Chunk",
+            filters={
+                "knowledge_base": self.name,
+                "status": "Reviewed"
+            },
+            fields=["name", "content", "section_title", "chunk_index"],
+            order_by="chunk_index"
+        )
+
+        for chunk in chunks:
+            document_vector = self._generate_vector_from_text(chunk.content, self.api_key)
+            
+            metadata = {
+                "chunk_doc": chunk.name,
+                "source": self.source,
+                "chunk_index": chunk.chunk_index,
+                "section_title": chunk.section_title,
+                "description": chunk.content[:100],
+                "content_length": len(chunk.content),
+                "update_date": frappe.utils.now()
+            }
+            
+            self._store_vector_in_faiss(document_vector, metadata)
+            
+            # Update chunk status
+            frappe.db.set_value("Knowledge Base Chunk", chunk.name, "status", "Processed")
+
+        self.status = "Completed"
+        self.save()
 
 @frappe.whitelist()
 def store_content_as_vector(docname):
