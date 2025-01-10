@@ -10,32 +10,34 @@ frappe.ui.form.on("Knowledge Base Query", {
             return;
         }
 
-        // Save the document first
-        frm.save().then(function() {
-            // Call the server-side function to process the query
+        // First save the document
+        frm.save().then(() => {
+            // After successful save, call the server-side function
             frappe.call({
                 method: "frappe_custom_app.frappe_custom_app.doctype.knowledge_base_query.knowledge_base_query.process_query",
                 args: {
-                    docname: frm.doc.name // Pass the docname after saving
+                    docname: frm.docname
                 },
                 freeze: true,
                 freeze_message: __("Processing your query..."),
                 callback: function (response) {
                     if (response.message) {
-                        // Success message
                         frappe.msgprint(__("Query processed successfully!"));
-                        frm.reload_doc(); // Reload the form to get updated data
-                    } else {
-                        // If no response message, handle it gracefully
-                        frappe.msgprint(__("Unexpected response. Please try again."));
+                        frm.reload_doc(); // Reload to show updated values
                     }
                 },
                 error: function (err) {
-                    // Log the error and display a message
                     console.error("Error while processing query:", err);
                     frappe.msgprint(__("An error occurred while processing the query."));
                 }
             });
+        }).catch((err) => {
+            console.error("Error saving document:", err);
+            frappe.msgprint(__("Please save the document first."));
         });
+    },
+    
+    refresh: function(frm) {
+        frm.refresh_fields(['full_prompt', 'response', 'relevant_texts']);
     }
 });

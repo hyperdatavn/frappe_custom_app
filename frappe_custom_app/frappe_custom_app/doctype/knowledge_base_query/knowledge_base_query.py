@@ -95,6 +95,9 @@ def process_query(docname):
             template="You are an assistant with legal knowledge. Based on the following context:\n{context}\n\nAnswer the user's question by vietnamese:\n{query}"
         ).format(context=context, query=user_query)
 
+        # Store the full prompt before asking GPT
+        knowledge_query.full_prompt = gpt_prompt
+        
         # Ask GPT
         gpt_response = llm(gpt_prompt)
 
@@ -104,6 +107,9 @@ def process_query(docname):
         knowledge_query.status = "Completed"
         knowledge_query.save()
         frappe.db.commit()
+
+        # Return success message
+        return {"message": "success", "response": gpt_response}
 
     except Exception as e:
         # Handle errors

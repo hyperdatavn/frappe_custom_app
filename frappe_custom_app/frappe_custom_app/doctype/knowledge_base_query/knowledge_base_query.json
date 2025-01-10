@@ -7,6 +7,7 @@
  "field_order": [
   "user_query",
   "submit_asking",
+  "full_prompt",
   "response",
   "relevant_texts",
   "status"
@@ -15,6 +16,7 @@
   {
    "fieldname": "response",
    "fieldtype": "Text Editor",
+   "in_list_view": 1,
    "label": "Response"
   },
   {
@@ -25,23 +27,30 @@
   {
    "fieldname": "status",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Status",
    "options": "Draft\nProcessing\nCompleted\nFailed"
   },
   {
    "fieldname": "user_query",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "User Query"
   },
   {
    "fieldname": "submit_asking",
    "fieldtype": "Button",
    "label": "Asking"
+  },
+  {
+   "fieldname": "full_prompt",
+   "fieldtype": "Long Text",
+   "label": "Full Prompt"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-28 03:23:12.864959",
+ "modified": "2025-01-10 09:25:40.079896",
  "modified_by": "Administrator",
  "module": "Frappe Custom App",
  "name": "Knowledge Base Query",
