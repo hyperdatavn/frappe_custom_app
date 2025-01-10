@@ -26,7 +26,7 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "Pending\nProcessing\nCompleted\nFailed"
+   "options": "Draft\nProcessing\nCompleted\nFailed"
   },
   {
    "fieldname": "user_query",

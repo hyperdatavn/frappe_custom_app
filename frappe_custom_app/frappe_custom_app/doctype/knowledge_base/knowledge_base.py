@@ -18,10 +18,6 @@ class KnowledgeBase(Document):
         super().__init__(*args, **kwargs)
         self.api_key = frappe.db.get_single_value("Hyperdata App Settings", "api_key")
 
-    def after_insert(self):
-        if self.document_file and self.status != "Chunked":
-            self.create_content_chunks()
-
     @frappe.whitelist()
     def store_content_as_vector(self):
         """
@@ -42,8 +38,13 @@ class KnowledgeBase(Document):
         if not self.api_key:
             frappe.throw("OpenAI API key is missing. Please configure it in Hyperdata App Settings.")
         # Split document into chunks
-        chunks = self._chunk_document(file_path)
-        
+        if self.status == "Draft":
+            chunks = self._chunk_document(file_path)
+            self.status = "Chunked"
+            self.save()
+        else:
+            chunks = self._chunk_document(file_path)
+
         # Generate vectors for each chunk
         for chunk_idx, chunk in enumerate(chunks):
             document_vector = self._generate_vector_from_text(chunk['text'], self.api_key)
@@ -60,6 +61,18 @@ class KnowledgeBase(Document):
             }
             
             self._store_vector_in_faiss(document_vector, metadata)
+
+            # Update the status of corresponding Knowledge Base Chunk
+            chunk_doc = frappe.get_all(
+                "Knowledge Base Chunk",
+                filters={
+                    "knowledge_base": self.name,
+                    "chunk_index": chunk_idx
+                },
+                pluck="name"
+            )
+            if chunk_doc:
+                frappe.db.set_value("Knowledge Base Chunk", chunk_doc[0], "status", "Processed")
 
         # Update document status
         self.processed_data = f"Vector stored with metadata: {metadata}"
@@ -253,3 +266,58 @@ class KnowledgeBase(Document):
 def store_content_as_vector(docname):
     doc = frappe.get_doc("Knowledge Base", docname)
     return doc.store_content_as_vector()
+
+@frappe.whitelist()
+def upload_file_to_knowledge_base(source):
+    """
+    API endpoint to upload a file to the Knowledge Base.
+    :param source: The source of the document.
+    """
+    from frappe.utils.file_manager import save_file
+
+    # Check if the file is present in the request
+    if 'file' not in frappe.request.files:
+        frappe.throw("No file found in the request")
+
+    # Get the uploaded file from the request
+    uploaded_file = frappe.request.files['file']
+
+    # Read the file content
+    file_content = uploaded_file.stream.read()  # Use .read() if 'stream' is not available
+
+    # Create a new Knowledge Base document
+    kb_doc = frappe.new_doc("Knowledge Base")
+    kb_doc.source = source
+    kb_doc.status = "Draft"
+    kb_doc.insert()
+
+    # Save the uploaded file and attach it to the Knowledge Base document
+    saved_file = save_file(
+        uploaded_file.filename,
+        file_content,
+        "Knowledge Base",
+        kb_doc.name,
+        is_private=1
+    )
+
+    # Update the document_file field with the URL of the saved file
+    kb_doc.document_file = saved_file.file_url
+    kb_doc.save()
+
+    # Try to create chunks
+    try:
+        kb_doc.create_content_chunks()
+    except Exception as e:
+        # Log the error but don't throw it to allow file upload to complete
+        frappe.log_error(f"Chunk creation failed for {kb_doc.name}: {str(e)}", 
+                        "Knowledge Base Chunk Creation")
+        return {
+            "message": "File uploaded successfully but chunk creation failed",
+            "knowledge_base": kb_doc.name
+        }
+
+
+    return {
+        "message": "File uploaded and chunked successfully",
+        "knowledge_base": kb_doc.name
+    }
